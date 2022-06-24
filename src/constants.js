@@ -1,1 +1,1 @@
-export const GRAVITATIONAL_CONSTANT = 20;
+export const GRAVITATIONAL_CONSTANT = 25;

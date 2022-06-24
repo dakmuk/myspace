@@ -1,5 +1,6 @@
 import {
     AmbientLight,
+    DirectionalLight,
     Clock,
     SphereGeometry,
     Mesh,
@@ -8,10 +9,16 @@ import {
     Scene,
     WebGLRenderer,
     Vector3,
-    PointLight,
+    CubeTextureLoader
 } from 'three';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 import * as Util from './util';
+import ft from '../asset/corona_ft.png';
+import bk from '../asset/corona_bk.png';
+import lf from '../asset/corona_lf.png';
+import rt from '../asset/corona_rt.png';
+import up from '../asset/corona_up.png';
+import dn from '../asset/corona_dn.png';
 let camera, scene, renderer, controls, clock;
 let sun, earth, moon;
 // eslint-disable-next-line
@@ -66,29 +73,32 @@ function init() {
 
     scene = new Scene();
 
-    camera = new PerspectiveCamera( 40, ASPECT_RATIO, 0.1, 1000 );
-    camera.position.x = 0;
-    camera.position.y = 0;
-    camera.position.z = 100;
+    camera = new PerspectiveCamera( 50, ASPECT_RATIO, 0.1, 10000 );
+    camera.position.set( 0, 1000, 1000 );
 
     scene.add( new AmbientLight( 0x0a0a0a ) );
 
-    // const light = new DirectionalLight();
-    const light = new PointLight();
-    light.position.set( -100, 0, 0 );
-    light.castShadow = true;
-    light.shadow.camera.zoom = 2; // tighter shadow map
-    scene.add( light );
+    const ambientLight = new AmbientLight( 0xffffff, 0.5 );
+    const light = new DirectionalLight( 0xffffff, 0.5 );
+    // light.position.set( -100, 0, 0 );
+    // light.castShadow = true;
+    // light.shadow.camera.zoom = 2; // tighter shadow map
+    scene.add( light, ambientLight );
 
-    sun = new CelestialObject( 20, 1, 0xffffff );
-    sun.setPosition( -120, 0, 0 );
-    earth = new CelestialObject( 10, 10, 0x88eeaa );
-    earth.setVelocity( new Vector3 ( 0, -2.5, 0 ) );
-    moon = new CelestialObject( 1, 1, 0xffffaa );
-    moon.setPosition( 25, 0, 0 );
-    moon.setVelocity( new Vector3( 0, 25, 0 ) );
+    sun = new CelestialObject( 50, 100, 0xffffff );
+    sun.setPosition( 0, 0, 0 );
+    earth = new CelestialObject( 12, 20, 0x88eeaa );
+    earth.setPosition( 200, 0, 0 );
+    earth.setVelocity( new Vector3( 0, -30, 0 ) );
+    moon = new CelestialObject( 3, 0.1, 0xffffaa );
+    moon.setPosition( 225, 0, 0 );
+    moon.setVelocity( new Vector3( 0, 5, 0 ) );
     scene.add( moon.mesh, earth.mesh, sun.mesh );
-    physics = new Physics( [ moon, earth ] );
+    physics = new Physics( [ sun, moon, earth ] );
+
+    const loader = new CubeTextureLoader();
+    const texture = loader.load([ ft, bk, up, dn, rt, lf ]);
+    scene.background = texture;
 
     clock = new Clock();
     clock.start();
